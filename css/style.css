@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Press Start 2P', cursive;
+    background-color: #111;
+    /* fond sombre, un peu plus “techno” */
+}
+
+/* Score et vies */
+#score,
+#lives,
+#instructions {
+    position: absolute;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow: 0 0 10px #000;
+    z-index: 100;
+}
+
+/* Score */
+#score {
+    top: 10px;
+    left: 10px;
+    color: #FFD700;
+    /* jaune chantier */
+    background: rgba(20, 20, 20, 0.7);
+    border: 2px solid #FFA500;
+    /* orange chantier */
+    text-shadow: 0 0 6px #FFD700, 0 0 12px #FFA500;
+}
+
+/* Lives */
+#lives {
+    top: 60px;
+    left: 10px;
+    color: #00FF00;
+    /* vert vif */
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00FF00;
+    text-shadow: 0 0 6px #00FF00;
+}
+
+/* Instructions */
+#instructions {
+    bottom: 20px;
+    left: 10px;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 0 0 4px #000;
+}
+
+/* Barre de progression en haut à droite */
+#progress-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 250px;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #00CCFF;
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00CCFF, #0066FF);
+    box-shadow: 0 0 10px #00CCFF, 0 0 20px #0066FF;
+    transition: width 0.3s ease;
+}
+
+#progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    left: 0;
+    line-height: 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 0 0 6px #000;
+}
+
+/* Barre de vie centrée en bas */
+#life-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 22px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+}
+
+#life-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #00FF00, #88FF00);
+    border-radius: 8px;
+    box-shadow: 0 0 10px #00FF00, 0 0 20px #88FF00;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* Boutons menu */
+button {
+    padding: 12px 25px;
+    margin: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: #111;
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    cursor: pointer;
+    text-shadow: 0 0 6px #000;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #FFA500, #FFB733);
+    box-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
+}
