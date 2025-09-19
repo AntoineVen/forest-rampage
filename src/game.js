@@ -30,6 +30,7 @@ export class Game {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.set(0, 10, 15);
         this.camera.lookAt(0, 0, 0);
+        this.cameraShakeOffset = new THREE.Vector3(0, 0, 0);
 
         // Scène
         this.scene = new THREE.Scene();
@@ -56,31 +57,107 @@ export class Game {
         this.ground.rotation.x = -Math.PI / 2;
         this.scene.add(this.ground);
 
+        // Clôture en bois autour de la carte
+        this.fence = this.createMinecraftFence();
+        this.scene.add(this.fence);
 
         // Joueur
         this.player = new Player();
         this.scene.add(this.player.mesh);
-
-        // Exemple : un cube
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        this.cube = new THREE.Mesh(geometry, material);
-        this.scene.add(this.cube);
     }
+
 
     // Boucle d’animation
     animate() {
         requestAnimationFrame(() => this.animate());
+        // --- Caméra ---
+        // position normale de la caméra
+        const relativeCameraOffset = new THREE.Vector3(0, 5, -10);
 
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.01;
+        // applique le recul si explosion
+        const offsetWithShake = relativeCameraOffset.clone().add(this.cameraShakeOffset);
 
+        // transforme en coordonnées mondiales
+        const cameraTargetPos = offsetWithShake.applyMatrix4(this.player.mesh.matrixWorld);
+
+        // lissage du mouvement
+        this.camera.position.lerp(cameraTargetPos, 0.1);
+
+        // regarde toujours la voiture
+        this.camera.lookAt(this.player.mesh.position);
         this.renderer.render(this.scene, this.camera);
     }
 
     start() {
         this.animate();
     }
+
+
+    // --- CLÔTURE EN BOIS AUTOUR DE LA CARTE ---
+    createMinecraftFence() {
+        const fenceGroup = new THREE.Group();
+        const mapSize = 400;           // taille du terrain
+        const postHeight = 2.5;        // hauteur des poteaux
+        const postThickness = 0.2;     // largeur des poteaux
+        const railHeight = 1.5;        // hauteur des lattes
+        const railThickness = 0.15;    // épaisseur des lattes
+        const panelSpacing = 3;        // distance entre poteaux
+        const postMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513, flatShading: true });
+        const railMaterial = postMaterial;
+
+        const numPostsPerSide = Math.floor(mapSize / panelSpacing) + 1;
+
+        for (let i = 0; i < numPostsPerSide; i++) {
+            const offset = -mapSize / 2 + i * panelSpacing;
+
+            // --- CÔTÉ AVANT (z positif) ---
+            const postFront = new THREE.Mesh(new THREE.BoxGeometry(postThickness, postHeight, postThickness), postMaterial);
+            postFront.position.set(offset, postHeight / 2, mapSize / 2);
+            fenceGroup.add(postFront);
+
+            if (i < numPostsPerSide - 1) {
+                const railFront = new THREE.Mesh(new THREE.BoxGeometry(panelSpacing, railThickness, railThickness), railMaterial);
+                railFront.position.set(offset + panelSpacing / 2, railHeight, mapSize / 2);
+                fenceGroup.add(railFront);
+            }
+
+            // --- CÔTÉ ARRIÈRE (z négatif) ---
+            const postBack = postFront.clone();
+            postBack.position.z = -mapSize / 2;
+            fenceGroup.add(postBack);
+
+            if (i < numPostsPerSide - 1) {
+                const railBack = new THREE.Mesh(new THREE.BoxGeometry(panelSpacing, railThickness, railThickness), railMaterial);
+                railBack.position.set(offset + panelSpacing / 2, railHeight, -mapSize / 2);
+                fenceGroup.add(railBack);
+            }
+
+            // --- CÔTÉ GAUCHE (x négatif) ---
+            const postLeft = new THREE.Mesh(new THREE.BoxGeometry(postThickness, postHeight, postThickness), postMaterial);
+            postLeft.position.set(-mapSize / 2, postHeight / 2, offset);
+            fenceGroup.add(postLeft);
+
+            if (i < numPostsPerSide - 1) {
+                const railLeft = new THREE.Mesh(new THREE.BoxGeometry(railThickness, railThickness, panelSpacing), railMaterial);
+                railLeft.position.set(-mapSize / 2, railHeight, offset + panelSpacing / 2);
+                fenceGroup.add(railLeft);
+            }
+
+            // --- CÔTÉ DROIT (x positif) ---
+            const postRight = postLeft.clone();
+            postRight.position.x = mapSize / 2;
+            fenceGroup.add(postRight);
+
+            if (i < numPostsPerSide - 1) {
+                const railRight = new THREE.Mesh(new THREE.BoxGeometry(railThickness, railThickness, panelSpacing), railMaterial);
+                railRight.position.set(mapSize / 2, railHeight, offset + panelSpacing / 2);
+                fenceGroup.add(railRight);
+            }
+        }
+
+        return fenceGroup;
+    }
+
 }
 
 
