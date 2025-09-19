@@ -1,4 +1,4 @@
-export class Object {
+export class GameObject {
     constructor(name, position) {
         this.name = name;
         this.position = position; // position should be a THREE.Vector3
