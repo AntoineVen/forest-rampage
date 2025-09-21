@@ -3,7 +3,8 @@
 //changeLives(0); // met à jour texte + barre
 import { InputManager } from "./inputManager.js";
 import { Player } from './player.js';
-import { updateParticles } from "./particleManager.js";
+import { ParticleManager } from "./particleManager.js";
+import { CollideManager } from "./collideManager.js";
 export class Game {
     constructor() {
         // Variables du jeu
@@ -12,7 +13,6 @@ export class Game {
 
         this.bullets = []; // tableau pour les balles
         this.obstacles = []; // tableau pour les obstacles
-        this.particles = []; // tableau pour les particules
 
 
         // Variables de contrôle
@@ -59,16 +59,27 @@ export class Game {
         this.ground.rotation.x = -Math.PI / 2;
         this.scene.add(this.ground);
 
+        // Herbe low-poly
+        this.grass = this.createGrassPatch(2500);
+        this.scene.add(this.grass);
+
         // Clôture en bois autour de la carte
         this.fence = this.createMinecraftFence();
         this.scene.add(this.fence);
+        this.fencePosts = this.getFencePosts(); // tableau des poteaux pour collision optimisée
 
         // Gestionnaire d'inputs
         this.input = new InputManager();
 
+        // Gestionnaire de particules
+        this.particleManager = new ParticleManager(this.scene);
+
         // Joueur
         this.player = new Player("Player1", this, this.input, new THREE.Vector3(0, 0, 0), 3);
         this.scene.add(this.player.mesh);
+
+        // Gestionnaire de collisions
+        this.collideManager = new CollideManager(this.player.mesh, this.fencePosts);
     }
 
 
@@ -81,7 +92,25 @@ export class Game {
         // --- Mettre à jour le joueur en fonction de son move ---
         this.player.update(delta);
 
+        // --- Particules ---
+        this.particleManager.updateParticles(delta);
+
+        // --- Collisions ---
+        this.collideManager.handleFenceCollisions();
+
         // --- Caméra ---
+        this.updateCameraPosition();
+
+
+        // --- Rendu ---
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    start() {
+        this.animate();
+    }
+
+    updateCameraPosition() {
         // position normale de la caméra
         const relativeCameraOffset = new THREE.Vector3(0, 5, -10);
 
@@ -96,17 +125,33 @@ export class Game {
 
         // regarde toujours la voiture
         this.camera.lookAt(this.player.mesh.position);
-
-        // --- Particules ---
-        updateParticles(this.scene, this.particles, delta);
-
-
-        // --- Rendu ---
-        this.renderer.render(this.scene, this.camera);
     }
 
-    start() {
-        this.animate();
+    // --- HERBE LOW-POLY ---
+    createGrassPatch(num = 500) {
+        const grassGroup = new THREE.Group();
+        const grassMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, flatShading: true });
+
+        for (let i = 0; i < num; i++) {
+            const height = 0.5 + Math.random() * 1; // hauteur aléatoire
+            const width = 0.1 + Math.random() * 0.1;
+
+            // brin d'herbe en triangle
+            const geometry = new THREE.ConeGeometry(width, height, 3);
+            const blade = new THREE.Mesh(geometry, grassMaterial);
+
+            // position aléatoire sur le sol
+            blade.position.x = (Math.random() - 0.5) * 400;
+            blade.position.z = (Math.random() - 0.5) * 400;
+            blade.position.y = height / 2; // pour que la base touche le sol
+
+            // rotation aléatoire
+            blade.rotation.y = Math.random() * Math.PI;
+
+            grassGroup.add(blade);
+        }
+
+        return grassGroup;
     }
 
 
@@ -173,6 +218,19 @@ export class Game {
         }
 
         return fenceGroup;
+    }
+
+    getFencePosts() {
+        // --- COLLISION OPTIMISÉE VOITURE / CLÔTURE ---
+        // Crée un tableau pour stocker uniquement les poteaux de la clôture
+        const fencePosts = [];
+        this.scene.traverse(obj => {
+            // On récupère uniquement les poteaux : BoxGeometry vertical
+            if (obj.isMesh && obj.geometry.type === "BoxGeometry" && obj.geometry.parameters.height >= 2) {
+                fencePosts.push(obj);
+            }
+        });
+        return fencePosts;
     }
 
 }

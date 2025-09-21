@@ -1,5 +1,4 @@
 import { GameObject } from "./object.js";
-import { createParticle } from "./particleManager.js";
 
 export class Player extends GameObject {
     constructor(name, game, input, position, maxLives) {
@@ -20,11 +19,7 @@ export class Player extends GameObject {
             this.mesh.position.z += Math.cos(this.mesh.rotation.y) * 20 * delta;
             this.mesh.position.x += Math.sin(this.mesh.rotation.y) * 20 * delta;
             // Traînée voiture (particules derrière la voiture)
-            for (let i = 0; i < 3; i++) {
-                let offset = new THREE.Vector3(0, 0, 2).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.mesh.rotation.y);
-                let pos = this.mesh.position.clone().sub(offset).add(new THREE.Vector3((Math.random() - 0.5) * 0.5, 0, (Math.random() - 0.5) * 0.5));
-                createParticle(this.game.scene, this.game.particles, pos, 0x000000, 0.5);
-            }
+            this.game.particleManager.playerMoveForward(this.mesh);
         }
         // Move backward
         if (this.input.isDown("s")) {
