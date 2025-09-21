@@ -60,4 +60,35 @@ export class ParticleManager {
             this.createParticle(pos, 0x000000, 0.5);
         }
     }
+
+    playerExlose(car) {
+        // Particules feu
+        const numParticles = 200;
+        for (let i = 0; i < numParticles; i++) {
+            const pos = car.position.clone().add(new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            ));
+            const particle = new THREE.Points(
+                new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([pos.x, pos.y, pos.z], 3)),
+                new THREE.PointsMaterial({
+                    color: 0xff5500,
+                    size: 0.3,
+                    transparent: true,
+                    opacity: 0.8
+                })
+            );
+            particle.userData = {
+                life: 1.5,
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    Math.random() * 10,
+                    (Math.random() - 0.5) * 10
+                )
+            };
+            this.scene.add(particle);
+            this.particles.push(particle);
+        }
+    }
 }

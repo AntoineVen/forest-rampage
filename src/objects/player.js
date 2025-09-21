@@ -6,7 +6,7 @@ export class Player extends GameObject {
         this.maxLives = maxLives;
         this.lives = maxLives; // Initialiser la vie actuelle à la vie maximale
         this.score = 0; // Initialiser le score du joueur
-        this.speed = 0.5; // Vitesse de déplacement du joueur
+        this.speed = 1; // Vitesse de déplacement du joueur
         this.mesh = this.createCar();
         this.game = game;
         this.input = input;
@@ -17,8 +17,8 @@ export class Player extends GameObject {
         // Déplacement basé sur les entrées clavier
         // Move forward
         if (this.input.isDown("z")) {
-            this.mesh.position.z += Math.cos(this.mesh.rotation.y) * 20 * delta;
-            this.mesh.position.x += Math.sin(this.mesh.rotation.y) * 20 * delta;
+            this.mesh.position.z += Math.cos(this.mesh.rotation.y) * 20 * delta * this.speed;
+            this.mesh.position.x += Math.sin(this.mesh.rotation.y) * 20 * delta * this.speed;
             // Traînée voiture (particules derrière la voiture)
             this.game.particleManager.playerMoveForward(this.mesh);
         }
@@ -124,7 +124,7 @@ export class Player extends GameObject {
 
         // Option : si plus de vie, fin du jeu
         if (this.lives <= 0) {
-            //explodeCar(); // explosion de la voiture
+            this.explodeCar(); // explosion de la voiture
 
             // attendre 1 seconde avant de recharger la page
             setTimeout(() => {
@@ -152,5 +152,36 @@ export class Player extends GameObject {
             lifeBar.style.background = "linear-gradient(90deg, #FF0000, #880000)"; // rouge
             lifeBar.style.boxShadow = "0 0 10px #FF0000, 0 0 20px #880000";
         }
+    }
+
+    // EXPLOSION voiture
+    explodeCar() {
+        const carPosition = this.mesh.position.clone();
+
+        // Explosion des morceaux de la voiture
+        this.mesh.children.forEach(mesh => {
+            const meshClone = mesh.clone();
+            meshClone.position.copy(mesh.getWorldPosition(new THREE.Vector3()));
+            meshClone.userData = {
+                life: 2,
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    Math.random() * 10,
+                    (Math.random() - 0.5) * 10
+                )
+            };
+            this.game.scene.add(meshClone);
+            this.game.particleManager.particles.push(meshClone);
+        });
+
+        // Particules feu
+        this.game.particleManager.playerExlose(this.mesh);
+
+        // Retire la voiture principale
+        this.game.scene.remove(this.mesh);
+
+        // Recul de caméra
+        this.game.cameraShakeOffset.set(0, 2, -10);
+        setTimeout(() => { this.game.cameraShakeOffset.set(0, 0, 0); }, 1000); // revient après 1s
     }
 }
