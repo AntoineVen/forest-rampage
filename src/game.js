@@ -2,9 +2,10 @@
 
 //changeLives(0); // met à jour texte + barre
 import { InputManager } from "./inputManager.js";
-import { Player } from './player.js';
+import { Player } from './objects/player.js';
 import { ParticleManager } from "./particleManager.js";
 import { CollideManager } from "./collideManager.js";
+import { TreeFactory } from "./objects/treeFactory.js";
 export class Game {
     constructor() {
         // Variables du jeu
@@ -67,6 +68,20 @@ export class Game {
         this.fence = this.createMinecraftFence();
         this.scene.add(this.fence);
         this.fencePosts = this.getFencePosts(); // tableau des poteaux pour collision optimisée
+
+        // Arbres
+        this.treeFactory = new TreeFactory();
+        for (let i = 0; i < 50; i++) {
+            let oak = this.treeFactory.createOakTree(200);
+            this.scene.add(oak);
+            this.obstacles.push(oak);
+            let pine = this.treeFactory.createPineTree(200);
+            this.obstacles.push(pine);
+            this.scene.add(pine);
+        }
+        this.totalTrees = TreeFactory.totalTrees; // nombre total d'arbres créés
+
+
 
         // Gestionnaire d'inputs
         this.input = new InputManager();
