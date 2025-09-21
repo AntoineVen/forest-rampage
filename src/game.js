@@ -30,6 +30,7 @@ export class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
+        window.addEventListener("resize", () => this.onWindowResize());
 
         // Caméra
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -127,6 +128,15 @@ export class Game {
 
     start() {
         this.animate();
+    }
+
+    onWindowResize() {
+        // Ajuster la caméra
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+
+        // Ajuster le renderer
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     updateCameraPosition() {
