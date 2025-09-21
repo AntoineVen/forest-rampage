@@ -9,21 +9,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+    <script type="module" src="src/menu.js"></script>
     <script type="module" src="src/main.js"></script>
 </head>
 
 <body>
-    <div id="score">Score : 0</div>
-    <div id="lives">Vies : 3</div>
-    <div id="instructions">
-        Z/S : Avancer/Reculer | Q/D : Tourner | Espace : Tirer
+    <!-- Menu principal -->
+    <div id="menu">
+        <div class="menu-buttons">
+            <button id="play-btn">Jouer</button>
+            <button id="credits-btn">Crédits</button>
+            <button id="options-btn">Options</button>
+        </div>
     </div>
-    <div id="progress-container">
-        <div id="progress-bar"></div>
-        <div id="progress-text">0 / 0 Arbres détruits</div>
-    </div>
-    <div id="life-container">
-        <div id="life-bar"></div>
+    <!-- ATH -->
+    <div id="ath">
+        <div id="score">Score : 0</div>
+        <div id="lives">Vies : 3</div>
+        <div id="instructions">
+            Z/S : Avancer/Reculer | Q/D : Tourner | Espace : Tirer
+        </div>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+            <div id="progress-text">0 / 0 Arbres détruits</div>
+        </div>
+        <div id="life-container">
+            <div id="life-bar"></div>
+        </div>
     </div>
 </body>
 

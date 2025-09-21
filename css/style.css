@@ -126,3 +126,105 @@ button:hover {
     background: linear-gradient(90deg, #FFA500, #FFB733);
     box-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
 }
+
+#ath {
+    display: none;
+    /* caché par défaut */
+}
+
+/* Menu principal */
+#menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    color: #FFD700;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    opacity: 0;
+    animation: fadeInMenu 1s forwards;
+    overflow: hidden;
+    padding-top: 170px;
+}
+
+/* Fond flou */
+#menu::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/images/ForestRampage.png');
+    background-size: cover;
+    background-position: center;
+    filter: blur(0px);
+    /* flou léger */
+    z-index: 1;
+}
+
+/* Texte et boutons au-dessus */
+.menu-buttons {
+    position: relative;
+    z-index: 2;
+}
+
+
+@keyframes fadeInMenu {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Container des boutons pour l’effet cascade */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-buttons button {
+    padding: 12px 25px;
+    margin: 12px;
+    font-size: 20px;
+    color: #111;
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    cursor: pointer;
+    text-shadow: 0 0 6px #000;
+    transition: all 0.2s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInButton 0.5s forwards;
+}
+
+.menu-buttons button:nth-child(1) {
+    animation-delay: 0.5s;
+}
+
+.menu-buttons button:nth-child(2) {
+    animation-delay: 0.8s;
+}
+
+.menu-buttons button:nth-child(3) {
+    animation-delay: 1.1s;
+}
+
+@keyframes fadeInButton {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-buttons button:hover {
+    background: linear-gradient(90deg, #FFA500, #FFB733);
+    box-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
+}
