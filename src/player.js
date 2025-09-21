@@ -1,27 +1,39 @@
 import { GameObject } from "./object.js";
+import { createParticle } from "./particleManager.js";
 
 export class Player extends GameObject {
-    constructor(name, input, position, maxLives) {
+    constructor(name, game, input, position, maxLives) {
         super(name, position);
         this.maxLives = maxLives;
         this.lives = maxLives; // Initialiser la vie actuelle à la vie maximale
         this.score = 0; // Initialiser le score du joueur
         this.speed = 0.5; // Vitesse de déplacement du joueur
         this.mesh = this.createCar();
+        this.game = game;
         this.input = input;
     }
 
     update(delta) {
-        // Déplacement basé sur les entrées
+        // Déplacement basé sur les entrées clavier
+        // Move forward
         if (this.input.isDown("z")) {
             this.mesh.position.z += Math.cos(this.mesh.rotation.y) * 20 * delta;
             this.mesh.position.x += Math.sin(this.mesh.rotation.y) * 20 * delta;
+            // Traînée voiture (particules derrière la voiture)
+            for (let i = 0; i < 3; i++) {
+                let offset = new THREE.Vector3(0, 0, 2).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.mesh.rotation.y);
+                let pos = this.mesh.position.clone().sub(offset).add(new THREE.Vector3((Math.random() - 0.5) * 0.5, 0, (Math.random() - 0.5) * 0.5));
+                createParticle(this.game.scene, this.game.particles, pos, 0x000000, 0.5);
+            }
         }
+        // Move backward
         if (this.input.isDown("s")) {
             this.mesh.position.z -= Math.cos(this.mesh.rotation.y) * 20 * delta;
             this.mesh.position.x -= Math.sin(this.mesh.rotation.y) * 20 * delta;
         }
+        // Rotate left
         if (this.input.isDown("q")) this.mesh.rotation.y += 2 * delta;
+        // Rotate right
         if (this.input.isDown("d")) this.mesh.rotation.y -= 2 * delta;
 
     }

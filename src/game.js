@@ -3,6 +3,7 @@
 //changeLives(0); // met à jour texte + barre
 import { InputManager } from "./inputManager.js";
 import { Player } from './player.js';
+import { updateParticles } from "./particleManager.js";
 export class Game {
     constructor() {
         // Variables du jeu
@@ -66,7 +67,7 @@ export class Game {
         this.input = new InputManager();
 
         // Joueur
-        this.player = new Player("Player1", this.input, new THREE.Vector3(0, 0, 0), 3);
+        this.player = new Player("Player1", this, this.input, new THREE.Vector3(0, 0, 0), 3);
         this.scene.add(this.player.mesh);
     }
 
@@ -95,6 +96,10 @@ export class Game {
 
         // regarde toujours la voiture
         this.camera.lookAt(this.player.mesh.position);
+
+        // --- Particules ---
+        updateParticles(this.scene, this.particles, delta);
+
 
         // --- Rendu ---
         this.renderer.render(this.scene, this.camera);
