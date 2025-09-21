@@ -1,6 +1,10 @@
 export class TreeFactory {
     static totalTrees = 0; // compteur statique pour le nombre total d'arbres créés
 
+    constructor(game) {
+        this.game = game;
+    }
+
     // CHÊNES (sphères)
     createOakTree(range = 400) {
         const treeGroup = new THREE.Group();
@@ -72,5 +76,63 @@ export class TreeFactory {
         pineGroup.position.z = (Math.random() - 0.5) * range;
 
         return pineGroup;
+    }
+
+    static explodeTree(game, tree) {
+        // Retire l'arbre original de la liste obstacles
+        const index = game.trees.indexOf(tree);
+        if (index !== -1) game.trees.splice(index, 1);
+        game.totalCurrentTrees--;
+
+        // Récupère tous les descendants (tronc + feuilles)
+        const meshesToExplode = [];
+        tree.traverse(obj => {
+            if (obj.isMesh) meshesToExplode.push(obj);
+        });
+
+        meshesToExplode.forEach(mesh => {
+            const worldPos = new THREE.Vector3();
+            const worldQuat = new THREE.Quaternion();
+            mesh.getWorldPosition(worldPos);
+            mesh.getWorldQuaternion(worldQuat);
+
+            const clone = mesh.clone();
+            clone.position.copy(worldPos);
+            clone.quaternion.copy(worldQuat);
+
+            // vitesse aléatoire pour l'explosion
+            clone.userData = {
+                life: 1,
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 5,
+                    Math.random() * 5,
+                    (Math.random() - 0.5) * 5
+                )
+            };
+
+            game.scene.add(clone);
+            game.particleManager.particles.push(clone);
+        });
+
+        // Supprime immédiatement le groupe original
+        game.scene.remove(tree);
+        game.destroyedTrees++;
+        TreeFactory.updateProgressBar(game.destroyedTrees, TreeFactory.totalTrees);
+
+        // Si tous les arbres sont détruits, victoire
+        if (game.destroyedTrees >= TreeFactory.totalTrees) {
+            timeout(() => {
+                location.reload();
+            }, 500);
+
+        }
+    }
+
+    static updateProgressBar(destroyedTrees, totalTrees) {
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const percentage = (destroyedTrees / totalTrees) * 100;
+        progressBar.style.width = percentage + "%";
+        progressText.innerText = destroyedTrees + " / " + totalTrees + " Arbres détruits";
     }
 }

@@ -10,9 +10,10 @@ export class Player extends GameObject {
         this.mesh = this.createCar();
         this.game = game;
         this.input = input;
+        this.changeLives(this.lives)
     }
 
-    update(delta) {
+    updatePlayer(delta) {
         // Déplacement basé sur les entrées clavier
         // Move forward
         if (this.input.isDown("z")) {
@@ -105,5 +106,51 @@ export class Player extends GameObject {
         car.position.y = 0;
 
         return car;
+    }
+
+    changeLives(amount) {
+        // Change le nombre de vies
+        this.lives += amount;
+
+        // Empêche de dépasser les limites
+        if (this.lives > this.maxLives) this.lives = this.maxLives;
+        if (this.lives < 0) this.lives = 0;
+
+        // Met à jour l'affichage texte
+        document.getElementById('lives').innerText = "Vies : " + this.lives;
+
+        // Met à jour la barre
+        this.updateLifeBar();
+
+        // Option : si plus de vie, fin du jeu
+        if (this.lives <= 0) {
+            //explodeCar(); // explosion de la voiture
+
+            // attendre 1 seconde avant de recharger la page
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    }
+
+    updateLifeBar() {
+        const percentage = (this.lives / this.maxLives) * 100;
+        const lifeBar = document.getElementById('life-bar');
+
+        // Met à jour la taille
+        lifeBar.style.width = percentage + "%";
+
+        // Change la couleur selon le pourcentage
+
+        if (percentage > 67) {
+            lifeBar.style.background = "linear-gradient(90deg, #00FF00, #88FF00)"; // vert
+            lifeBar.style.boxShadow = "0 0 10px #00FF00, 0 0 20px #88FF00";
+        } else if (percentage > 34) {
+            lifeBar.style.background = "linear-gradient(90deg, #FFFF00, #FFD700)"; // jaune
+            lifeBar.style.boxShadow = "0 0 10px #FFFF00, 0 0 20px #FFD700";
+        } else {
+            lifeBar.style.background = "linear-gradient(90deg, #FF0000, #880000)"; // rouge
+            lifeBar.style.boxShadow = "0 0 10px #FF0000, 0 0 20px #880000";
+        }
     }
 }

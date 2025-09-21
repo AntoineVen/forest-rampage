@@ -9,11 +9,13 @@ import { TreeFactory } from "./objects/treeFactory.js";
 export class Game {
     constructor() {
         // Variables du jeu
-        this.totalTrees = 0;
-        this.destroyedTrees = 0;
+        this.totalCurrentTrees = 0; // nombre total d'arbres actuels
+        this.totalTrees = 0; // nombre total d'arbres créés depuis le début
+        this.destroyedTrees = 0; // nombre d'arbres détruits
 
         this.bullets = []; // tableau pour les balles
-        this.obstacles = []; // tableau pour les obstacles
+        this.trees = []; // tableau pour les arbres
+        this.fencePosts = []; // tableau pour les poteaux de la clôture (collision optimisée)
 
 
         // Variables de contrôle
@@ -69,32 +71,33 @@ export class Game {
         this.scene.add(this.fence);
         this.fencePosts = this.getFencePosts(); // tableau des poteaux pour collision optimisée
 
-        // Arbres
-        this.treeFactory = new TreeFactory();
-        for (let i = 0; i < 50; i++) {
-            let oak = this.treeFactory.createOakTree(200);
-            this.scene.add(oak);
-            this.obstacles.push(oak);
-            let pine = this.treeFactory.createPineTree(200);
-            this.obstacles.push(pine);
-            this.scene.add(pine);
-        }
-        this.totalTrees = TreeFactory.totalTrees; // nombre total d'arbres créés
-
-
-
-        // Gestionnaire d'inputs
-        this.input = new InputManager();
 
         // Gestionnaire de particules
         this.particleManager = new ParticleManager(this.scene);
+
+        // Arbres
+        this.treeFactory = new TreeFactory(this);
+        for (let i = 0; i < 50; i++) {
+            let oak = this.treeFactory.createOakTree(200);
+            this.scene.add(oak);
+            this.trees.push(oak);
+            let pine = this.treeFactory.createPineTree(200);
+            this.trees.push(pine);
+            this.scene.add(pine);
+        }
+        this.totalTrees = TreeFactory.totalTrees;
+        this.totalCurrentTrees = TreeFactory.totalTrees;
+        TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
+
+        // Gestionnaire d'inputs
+        this.input = new InputManager();
 
         // Joueur
         this.player = new Player("Player1", this, this.input, new THREE.Vector3(0, 0, 0), 3);
         this.scene.add(this.player.mesh);
 
         // Gestionnaire de collisions
-        this.collideManager = new CollideManager(this.player.mesh, this.fencePosts);
+        this.collideManager = new CollideManager(this, this.fencePosts);
     }
 
 
@@ -105,13 +108,14 @@ export class Game {
         const delta = this.clock.getDelta();
 
         // --- Mettre à jour le joueur en fonction de son move ---
-        this.player.update(delta);
+        this.player.updatePlayer(delta);
 
         // --- Particules ---
         this.particleManager.updateParticles(delta);
 
         // --- Collisions ---
-        this.collideManager.handleFenceCollisions();
+        this.collideManager.handleFenceCollisions(this.fencePosts);
+        this.collideManager.handleTreeCollisions(this.trees);
 
         // --- Caméra ---
         this.updateCameraPosition();
