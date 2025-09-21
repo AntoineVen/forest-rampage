@@ -1,6 +1,7 @@
 
 
 //changeLives(0); // met à jour texte + barre
+import { InputManager } from "./inputManager.js";
 import { Player } from './player.js';
 export class Game {
     constructor() {
@@ -61,8 +62,11 @@ export class Game {
         this.fence = this.createMinecraftFence();
         this.scene.add(this.fence);
 
+        // Gestionnaire d'inputs
+        this.input = new InputManager();
+
         // Joueur
-        this.player = new Player();
+        this.player = new Player("Player1", this.input, new THREE.Vector3(0, 0, 0), 3);
         this.scene.add(this.player.mesh);
     }
 
@@ -70,6 +74,12 @@ export class Game {
     // Boucle d’animation
     animate() {
         requestAnimationFrame(() => this.animate());
+
+        const delta = this.clock.getDelta();
+
+        // --- Mettre à jour le joueur en fonction de son move ---
+        this.player.update(delta);
+
         // --- Caméra ---
         // position normale de la caméra
         const relativeCameraOffset = new THREE.Vector3(0, 5, -10);
@@ -85,6 +95,8 @@ export class Game {
 
         // regarde toujours la voiture
         this.camera.lookAt(this.player.mesh.position);
+
+        // --- Rendu ---
         this.renderer.render(this.scene, this.camera);
     }
 

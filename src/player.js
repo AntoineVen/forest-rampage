@@ -1,15 +1,30 @@
 import { GameObject } from "./object.js";
 
 export class Player extends GameObject {
-    constructor(name, position, maxLives) {
+    constructor(name, input, position, maxLives) {
         super(name, position);
         this.maxLives = maxLives;
         this.lives = maxLives; // Initialiser la vie actuelle à la vie maximale
         this.score = 0; // Initialiser le score du joueur
         this.speed = 0.5; // Vitesse de déplacement du joueur
         this.mesh = this.createCar();
+        this.input = input;
     }
 
+    update(delta) {
+        // Déplacement basé sur les entrées
+        if (this.input.isDown("z")) {
+            this.mesh.position.z += Math.cos(this.mesh.rotation.y) * 20 * delta;
+            this.mesh.position.x += Math.sin(this.mesh.rotation.y) * 20 * delta;
+        }
+        if (this.input.isDown("s")) {
+            this.mesh.position.z -= Math.cos(this.mesh.rotation.y) * 20 * delta;
+            this.mesh.position.x -= Math.sin(this.mesh.rotation.y) * 20 * delta;
+        }
+        if (this.input.isDown("q")) this.mesh.rotation.y += 2 * delta;
+        if (this.input.isDown("d")) this.mesh.rotation.y -= 2 * delta;
+
+    }
     createCar() {
         // Voiture
         const car = new THREE.Group();
