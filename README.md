@@ -6,6 +6,11 @@
 
 Forest Rampage is a simple **3D low-poly game** where you control a **crazy car** and try to **destroy as many trees as possible**. The game is still in development, with new features coming soon, so stay tuned!
 
+---
+
+## Démo
+Vous pouvez jouer/tester le jeu ici : [Forest Rampage](https://antoineven.github.io/forest-rampage/)
+
 ⚠️ **Note:** The game is currently a prototype.
 
 ---
@@ -15,7 +20,8 @@ Forest Rampage is a simple **3D low-poly game** where you control a **crazy car*
 - Score system and tree counter
 - Trees and car explosions
 - Few particles
-- Draft menu
+- Main menu, Pause, Game over menu
+- Turbo Boost Bonus
 
 ## Coming soon
 - Bonuses of all kinds
@@ -28,11 +34,12 @@ Forest Rampage is a simple **3D low-poly game** where you control a **crazy car*
 Here are the current controls to play the game:
 
 | Action              | Key / Button |
-|--------------------|-------------|
-| Move forward        | Z           |
-| Move backward       | S           |
-| Turn left           | Q           |
-| Turn right          | D           |
+|---------------------|--------------|
+| Move forward        | Z            |
+| Move backward       | S            |
+| Turn left           | Q            |
+| Turn right          | D            |
+| Pause               | Escape       |
 | Shoot / Action      | Space   _⚠️Not yet available_    |
 
 ---
