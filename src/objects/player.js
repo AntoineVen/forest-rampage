@@ -119,6 +119,10 @@ export class Player extends GameObject {
         document.getElementById('score').innerText = "Score : " + this.score;
     }
 
+    setSpeed(newSpeed) {
+        this.speed = newSpeed;
+    }
+
     changeLives(amount) {
         // Change le nombre de vies
         this.lives += amount;

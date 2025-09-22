@@ -343,7 +343,7 @@ button:hover {
     border: none;
     /* pas de bordure */
     cursor: pointer;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     gap: 8px;

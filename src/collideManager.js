@@ -4,6 +4,7 @@ export class CollideManager {
     static CAR_RADIUS = 1.5; // rayon de la voiture
     static POST_RADIUS = 0.25; // rayon approximatif du poteau
     static TREE_RADIUS = 1; // rayon approximatif des arbres
+    static BONUS_RADIUS = 1; // rayon approximatif des bonus
     constructor(game) {
         this.game = game;
         this.player = game.player;
@@ -50,5 +51,17 @@ export class CollideManager {
                 return;
             }
         });
+    }
+
+    handleBonusCollisions(bonuses) {
+        for (let i = 0; i < bonuses.length; i++) {
+            const bonus = bonuses[i];
+            const distance = this.car.position.distanceTo(bonus.position);
+            if (distance < CollideManager.CAR_RADIUS + CollideManager.BONUS_RADIUS) {
+                bonus.applyEffect(this.player); // Augmente la vitesse
+                this.game.scene.remove(bonus.mesh);
+                bonuses.splice(i, 1); // Retire le bonus de la liste
+            }
+        }
     }
 }

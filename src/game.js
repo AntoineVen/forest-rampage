@@ -6,6 +6,7 @@ import { Player } from './objects/player.js';
 import { ParticleManager } from "./particleManager.js";
 import { CollideManager } from "./collideManager.js";
 import { TreeFactory } from "./objects/treeFactory.js";
+import { Bonus, createTurboBoost } from "./objects/bonus.js";
 export class Game {
     static inGame = false; // variable globale pour savoir si on est en jeu (utile pour le menu pause)
     static isPaused = false; // variable globale pour savoir si le jeu est en pause
@@ -17,6 +18,7 @@ export class Game {
 
         this.trees = []; // tableau pour les arbres
         this.fencePosts = []; // tableau pour les poteaux de la clôture (collision optimisée)
+        this.bonuses = []; // tableau pour les bonus
 
 
         // Variables de contrôle
@@ -91,6 +93,11 @@ export class Game {
         this.totalCurrentTrees = TreeFactory.totalTrees;
         TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
 
+        // Bonus
+        this.turboBoost = new Bonus("Bonus Turbo", new THREE.Vector3(10, 0.6, 5), "turbo");
+        this.scene.add(this.turboBoost.mesh);
+        this.bonuses.push(this.turboBoost);
+
         // Gestionnaire d'inputs
         this.input = new InputManager();
 
@@ -105,6 +112,7 @@ export class Game {
     resetGame() {
         this.player.changeLives(this.player.maxLives); // met à jour texte + barre
         this.player.setScore(0); // réinitialise le score
+        this.player.setSpeed(1); // réinitialise la vitesse
         this.player.mesh.visible = true; // rend la voiture principale visible
         this.totalCurrentTrees = TreeFactory.totalTrees; // réinitialise le nombre d'arbres actuels
         this.destroyedTrees = 0; // réinitialise le nombre d'arbres détruits
@@ -119,6 +127,7 @@ export class Game {
         this.trees.forEach(tree => this.scene.remove(tree));
         this.trees = [];
         TreeFactory.totalTrees = 0; // réinitialise le compteur d'arbres créés
+
         // Recrée les arbres
         for (let i = 0; i < 50; i++) {
             let oak = this.treeFactory.createOakTree(200);
@@ -130,6 +139,14 @@ export class Game {
         }
         this.totalTrees = TreeFactory.totalTrees;
         this.totalCurrentTrees = TreeFactory.totalTrees;
+
+        // Recrée les bonus
+        this.bonuses.forEach(bonus => this.scene.remove(bonus.mesh));
+        this.bonuses = [];
+        this.turboBoost = new Bonus("Bonus Turbo", new THREE.Vector3(10, 0.6, 5), "turbo");
+        this.scene.add(this.turboBoost.mesh);
+        this.bonuses.push(this.turboBoost);
+
         Game.inGame = true; // le jeu est en cours
         Game.isPaused = false; // le jeu n'est pas en pause
 
@@ -149,9 +166,15 @@ export class Game {
         // --- Particules ---
         this.particleManager.updateParticles(delta);
 
+        // --- Animations diverses ---
+        for (let i = 0; i < this.bonuses.length; i++) {
+            if (this.bonuses[i].mesh.tick) this.bonuses[i].mesh.tick(delta);
+        }
+
         // --- Collisions ---
         this.collideManager.handleFenceCollisions(this.fencePosts);
         this.collideManager.handleTreeCollisions(this.trees);
+        this.collideManager.handleBonusCollisions(this.bonuses);
 
         // --- Caméra ---
         this.updateCameraPosition();
@@ -163,6 +186,8 @@ export class Game {
 
     start() {
         Game.inGame = true; // le jeu est en cours
+        Game.isPaused = false; // le jeu n'est pas en pause
+
         this.animate();
     }
 

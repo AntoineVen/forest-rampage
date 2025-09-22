@@ -9,6 +9,7 @@ export function initMenu(game) {
     playBtn.addEventListener("click", () => {
         menu.style.display = "none"; // cache le menu
         ath.style.display = "block"; // affiche l'ATH
+        document.getElementById('pause-btn-in-game').style.display = 'flex'; // affiche le bouton pause
         game.start();              // démarre la boucle du jeu
     });
 
@@ -67,11 +68,14 @@ export function initMenu(game) {
 function togglePause() {
     if (!Game.inGame) return; // ne pas ouvrir le menu pause si on n'est pas en jeu
     const pauseMenu = document.getElementById('pause-menu');
+    const pauseBtn = document.getElementById('pause-btn-in-game');
     Game.isPaused = !Game.isPaused;
     if (Game.isPaused) {
+        pauseBtn.style.display = 'none'; // cache le bouton pause
         pauseMenu.classList.add('active');
         // mettre le jeu en pause
     } else {
+        pauseBtn.style.display = 'flex'; // affiche le bouton pause
         pauseMenu.classList.remove('active');
         // reprendre le jeu
     }
@@ -80,8 +84,10 @@ function togglePause() {
 // Afficher le menu Game Over
 export function showGameOver() {
     document.getElementById('game-over-menu').classList.add('active');
+    document.getElementById('pause-btn-in-game').style.display = 'none'; // cache le bouton pause
 }
 // Cacher le menu Game Over
 export function hideGameOver() {
     document.getElementById('game-over-menu').classList.remove('active');
+    document.getElementById('pause-btn-in-game').style.display = 'flex'; // affiche le bouton pause
 }
