@@ -92,7 +92,7 @@ export class Game {
         TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
 
         // Gestionnaire d'inputs
-        this.input = new InputManager(this);
+        this.input = new InputManager();
 
         // Joueur
         this.player = new Player("Player1", this, this.input, new THREE.Vector3(0, 0, 0), 3);

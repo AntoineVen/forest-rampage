@@ -1,4 +1,4 @@
-import { showGameOver } from "../inputManager.js";
+import { showGameOver } from "../menu.js";
 import { GameObject } from "./object.js";
 import { Game } from "../game.js";
 
