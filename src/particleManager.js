@@ -74,7 +74,7 @@ export class ParticleManager {
                 new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([pos.x, pos.y, pos.z], 3)),
                 new THREE.PointsMaterial({
                     color: 0xff5500,
-                    size: 0.3,
+                    size: 0.6,
                     transparent: true,
                     opacity: 0.8
                 })
@@ -85,6 +85,37 @@ export class ParticleManager {
                     (Math.random() - 0.5) * 10,
                     Math.random() * 10,
                     (Math.random() - 0.5) * 10
+                )
+            };
+            this.scene.add(particle);
+            this.particles.push(particle);
+        }
+    }
+
+    bonusTaken(bonus) {
+        // Particules bonus
+        const numParticles = 50;
+        for (let i = 0; i < numParticles; i++) {
+            const pos = bonus.position.clone().add(new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            ));
+            const particle = new THREE.Points(
+                new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([pos.x, pos.y, pos.z], 3)),
+                new THREE.PointsMaterial({
+                    color: 0xFFD700,
+                    size: 0.2,
+                    transparent: true,
+                    opacity: 0.8
+                })
+            );
+            particle.userData = {
+                life: (Math.random() - 0.5) * 0.5 + 0.3, // vie entre 0.1 et 0.5 secondes
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 3.5,
+                    Math.random() * 3.5,
+                    (Math.random() - 0.5) * 3.5
                 )
             };
             this.scene.add(particle);

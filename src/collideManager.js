@@ -58,6 +58,7 @@ export class CollideManager {
             const bonus = bonuses[i];
             const distance = this.car.position.distanceTo(bonus.position);
             if (distance < CollideManager.CAR_RADIUS + CollideManager.BONUS_RADIUS) {
+                this.game.particleManager.bonusTaken(bonus);
                 bonus.applyEffect(this.player); // Augmente la vitesse
                 this.game.scene.remove(bonus.mesh);
                 bonuses.splice(i, 1); // Retire le bonus de la liste
