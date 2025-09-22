@@ -49,9 +49,9 @@ export class Game {
         this.scene.add(new THREE.AmbientLight(0x404040));
 
         // Sol
-        const groundTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/terrain/grasslight-big.jpg');
+        const groundTexture = new THREE.TextureLoader().load('./assets/images/grassTexture3.png');
         groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-        groundTexture.repeat.set(20, 20); // répète la texture sur le terrain
+        groundTexture.repeat.set(50, 50); // répète la texture sur le terrain
 
         const groundGeometry = new THREE.PlaneGeometry(400, 400, 80, 80); // plus de segments pour le bump
         const groundMaterial = new THREE.MeshPhongMaterial({
