@@ -1,4 +1,6 @@
+import { showGameOver } from "../inputManager.js";
 import { GameObject } from "./object.js";
+import { Game } from "../game.js";
 
 export class Player extends GameObject {
     constructor(name, game, input, position, maxLives) {
@@ -14,6 +16,10 @@ export class Player extends GameObject {
     }
 
     updatePlayer(delta) {
+        if (Game.isPaused) return;
+        if (document.getElementById('game-over-menu').classList.contains('active')) return; // bloque toute action du joueur tant que menu Game Over actif
+        if (!Game.inGame) return; // ne pas mettre à jour si on n'est pas en jeu
+
         // Déplacement basé sur les entrées clavier
         // Move forward
         if (this.input.isDown("z")) {
@@ -108,6 +114,11 @@ export class Player extends GameObject {
         return car;
     }
 
+    setScore(newScore) {
+        this.score = newScore;
+        document.getElementById('score').innerText = "Score : " + this.score;
+    }
+
     changeLives(amount) {
         // Change le nombre de vies
         this.lives += amount;
@@ -128,7 +139,7 @@ export class Player extends GameObject {
 
             // attendre 1 seconde avant de recharger la page
             setTimeout(() => {
-                location.reload();
+                showGameOver();
             }, 1000);
         }
     }
@@ -178,7 +189,12 @@ export class Player extends GameObject {
         this.game.particleManager.playerExlose(this.mesh);
 
         // Retire la voiture principale
-        this.game.scene.remove(this.mesh);
+        //this.game.scene.remove(this.mesh);
+
+        this.mesh.visible = false; // cache la voiture principale
+
+        // Arrête le jeu
+        Game.inGame = false;
 
         // Recul de caméra
         this.game.cameraShakeOffset.set(0, 2, -10);

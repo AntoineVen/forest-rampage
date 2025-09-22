@@ -7,13 +7,14 @@ import { ParticleManager } from "./particleManager.js";
 import { CollideManager } from "./collideManager.js";
 import { TreeFactory } from "./objects/treeFactory.js";
 export class Game {
+    static inGame = false; // variable globale pour savoir si on est en jeu (utile pour le menu pause)
+    static isPaused = false; // variable globale pour savoir si le jeu est en pause
     constructor() {
         // Variables du jeu
         this.totalCurrentTrees = 0; // nombre total d'arbres actuels
         this.totalTrees = 0; // nombre total d'arbres créés depuis le début
         this.destroyedTrees = 0; // nombre d'arbres détruits
 
-        this.bullets = []; // tableau pour les balles
         this.trees = []; // tableau pour les arbres
         this.fencePosts = []; // tableau pour les poteaux de la clôture (collision optimisée)
 
@@ -91,7 +92,7 @@ export class Game {
         TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
 
         // Gestionnaire d'inputs
-        this.input = new InputManager();
+        this.input = new InputManager(this);
 
         // Joueur
         this.player = new Player("Player1", this, this.input, new THREE.Vector3(0, 0, 0), 3);
@@ -99,6 +100,40 @@ export class Game {
 
         // Gestionnaire de collisions
         this.collideManager = new CollideManager(this, this.fencePosts);
+    }
+
+    resetGame() {
+        this.player.changeLives(this.player.maxLives); // met à jour texte + barre
+        this.player.setScore(0); // réinitialise le score
+        this.player.mesh.visible = true; // rend la voiture principale visible
+        this.totalCurrentTrees = TreeFactory.totalTrees; // réinitialise le nombre d'arbres actuels
+        this.destroyedTrees = 0; // réinitialise le nombre d'arbres détruits
+        TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
+        this.player.mesh.position.set(0, 0, 0); // remet la voiture au centre
+        this.player.mesh.rotation.set(0, 0, 0); // remet la voiture droite
+        this.camera.position.set(0, 10, 15); // remet la caméra en position initiale
+        this.cameraShakeOffset.set(0, 0, 0); // remet le shake de la caméra à zéro
+        this.particleManager.particles.forEach(p => this.scene.remove(p)); // supprime toutes les particules
+        this.particleManager.particles = [];
+        // Supprime les arbres actuels
+        this.trees.forEach(tree => this.scene.remove(tree));
+        this.trees = [];
+        TreeFactory.totalTrees = 0; // réinitialise le compteur d'arbres créés
+        // Recrée les arbres
+        for (let i = 0; i < 50; i++) {
+            let oak = this.treeFactory.createOakTree(200);
+            this.scene.add(oak);
+            this.trees.push(oak);
+            let pine = this.treeFactory.createPineTree(200);
+            this.trees.push(pine);
+            this.scene.add(pine);
+        }
+        this.totalTrees = TreeFactory.totalTrees;
+        this.totalCurrentTrees = TreeFactory.totalTrees;
+        Game.inGame = true; // le jeu est en cours
+        Game.isPaused = false; // le jeu n'est pas en pause
+
+
     }
 
 
@@ -127,6 +162,7 @@ export class Game {
     }
 
     start() {
+        Game.inGame = true; // le jeu est en cours
         this.animate();
     }
 
