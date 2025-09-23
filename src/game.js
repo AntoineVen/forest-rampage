@@ -6,12 +6,12 @@ import { Player } from './objects/player.js';
 import { ParticleManager } from "./particleManager.js";
 import { CollideManager } from "./collideManager.js";
 import { TreeFactory } from "./objects/treeFactory.js";
-import { Bonus, createTurboBoost } from "./objects/bonus.js";
+import { Bonus, createTurboBoostBonus } from "./objects/bonus.js";
 export class Game {
     static inGame = false; // variable globale pour savoir si on est en jeu (utile pour le menu pause)
     static isPaused = false; // variable globale pour savoir si le jeu est en pause
     constructor() {
-        // Variables du jeu
+        // Variables du jeu (to refactor with resetGame)
         this.totalCurrentTrees = 0; // nombre total d'arbres actuels
         this.totalTrees = 0; // nombre total d'arbres créés depuis le début
         this.destroyedTrees = 0; // nombre d'arbres détruits
@@ -79,7 +79,7 @@ export class Game {
         // Gestionnaire de particules
         this.particleManager = new ParticleManager(this.scene);
 
-        // Arbres
+        // Arbres (to refactor with resetGame)
         this.treeFactory = new TreeFactory(this);
         for (let i = 0; i < 50; i++) {
             let oak = this.treeFactory.createOakTree(200);
@@ -93,10 +93,13 @@ export class Game {
         this.totalCurrentTrees = TreeFactory.totalTrees;
         TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
 
-        // Bonus
+        // Bonus (to refactor with resetGame)
         this.turboBoost = new Bonus("Bonus Turbo", new THREE.Vector3(10, 0.6, 5), "turbo");
         this.scene.add(this.turboBoost.mesh);
         this.bonuses.push(this.turboBoost);
+        this.shieldBonus = new Bonus("Bonus Bouclier", new THREE.Vector3(-10, 0.6, -5), "shield");
+        this.scene.add(this.shieldBonus.mesh);
+        this.bonuses.push(this.shieldBonus);
 
         // Gestionnaire d'inputs
         this.input = new InputManager();
@@ -113,6 +116,8 @@ export class Game {
         this.player.changeLives(this.player.maxLives); // met à jour texte + barre
         this.player.setScore(0); // réinitialise le score
         this.player.setSpeed(1); // réinitialise la vitesse
+        this.player.isInvincible = false; // désactive l'invincibilité
+        // TO DO: supprimer effet bouclier si actif
         this.player.mesh.visible = true; // rend la voiture principale visible
         this.totalCurrentTrees = TreeFactory.totalTrees; // réinitialise le nombre d'arbres actuels
         this.destroyedTrees = 0; // réinitialise le nombre d'arbres détruits
@@ -146,6 +151,9 @@ export class Game {
         this.turboBoost = new Bonus("Bonus Turbo", new THREE.Vector3(10, 0.6, 5), "turbo");
         this.scene.add(this.turboBoost.mesh);
         this.bonuses.push(this.turboBoost);
+        this.shieldBonus = new Bonus("Bonus Bouclier", new THREE.Vector3(-10, 0.6, -5), "shield");
+        this.scene.add(this.shieldBonus.mesh);
+        this.bonuses.push(this.shieldBonus);
 
         Game.inGame = true; // le jeu est en cours
         Game.isPaused = false; // le jeu n'est pas en pause
@@ -170,6 +178,12 @@ export class Game {
         for (let i = 0; i < this.bonuses.length; i++) {
             if (this.bonuses[i].mesh.tick) this.bonuses[i].mesh.tick(delta);
         }
+        if (this.player.isInvincible) {
+            this.player.mesh.children.forEach(child => {
+                if (child.tick) child.tick(delta);
+            });
+        }
+
 
         // --- Collisions ---
         this.collideManager.handleFenceCollisions(this.fencePosts);

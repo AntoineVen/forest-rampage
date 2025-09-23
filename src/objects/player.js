@@ -9,6 +9,7 @@ export class Player extends GameObject {
         this.lives = maxLives; // Initialiser la vie actuelle à la vie maximale
         this.score = 0; // Initialiser le score du joueur
         this.speed = 1; // Vitesse de déplacement du joueur
+        this.isInvincible = false; // Indique si le joueur est invincible
         this.mesh = this.createCar();
         this.game = game;
         this.input = input;
@@ -124,6 +125,7 @@ export class Player extends GameObject {
     }
 
     changeLives(amount) {
+        if (this.isInvincible && amount < 0) return;
         // Change le nombre de vies
         this.lives += amount;
 
