@@ -104,13 +104,13 @@ export function createShieldBonus() {
 
     // Matériaux métal
     const metalLight = new THREE.MeshStandardMaterial({
-        color: 0xaaaaaa,
+        color: 0x00CCFF,
         metalness: 0.8,
         roughness: 0.3,
         flatShading: true
     });
     const metalDark = new THREE.MeshStandardMaterial({
-        color: 0x555555,
+        color: 0x0066FF,
         metalness: 0.9,
         roughness: 0.4,
         flatShading: true

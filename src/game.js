@@ -94,10 +94,10 @@ export class Game {
         TreeFactory.updateProgressBar(this.destroyedTrees, this.totalTrees);
 
         // Bonus (to refactor with resetGame)
-        this.turboBoost = new Bonus("Bonus Turbo", new THREE.Vector3(10, 0.6, 5), "turbo");
+        this.turboBoost = new Bonus("Bonus Turbo", new THREE.Vector3(10, 0, 5), "turbo");
         this.scene.add(this.turboBoost.mesh);
         this.bonuses.push(this.turboBoost);
-        this.shieldBonus = new Bonus("Bonus Bouclier", new THREE.Vector3(-10, 0.6, -5), "shield");
+        this.shieldBonus = new Bonus("Bonus Bouclier", new THREE.Vector3(-10, 0, -5), "shield");
         this.scene.add(this.shieldBonus.mesh);
         this.bonuses.push(this.shieldBonus);
 
