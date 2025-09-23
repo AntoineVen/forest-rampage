@@ -11,6 +11,7 @@ export class Bonus extends GameObject {
     applyEffect(player) {
         if (this.type === "turbo") {
             player.setSpeed(2 * player.speed); // Double la vitesse du joueur
+            activateTurboHUD(5); // Affiche le HUD du turbo pendant 5 secondes
             setTimeout(() => {
                 player.setSpeed(1); // Remet la vitesse normale après 5 secondes
             }, 5000);
@@ -209,5 +210,23 @@ function adaptLifeBarForShield() {
         lifeBar.style.boxShadow = originalLifeBarStyle.boxShadow;
         lifeContainer.style.border = '2px solid #FFD700'; // jaune
     }, 5000);
+}
+
+
+function activateTurboHUD(duration = 5) {
+    const turboText = document.getElementById('turbo-text');
+    let timeLeft = duration;
+    turboText.style.opacity = 1; // afficher le texte
+    turboText.textContent = `Turbo Boost ! ${timeLeft}`;
+
+    const interval = setInterval(() => {
+        timeLeft -= 1;
+        if (timeLeft <= 0) {
+            turboText.style.opacity = 0; // cacher le texte
+            clearInterval(interval);
+        } else {
+            turboText.textContent = `Turbo Boost ! ${timeLeft}`;
+        }
+    }, 1000);
 }
 
